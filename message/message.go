@@ -9,8 +9,13 @@ type Envelope struct {
 	Image            *Image       `json:"image,omitempty"`
 	Interactive      *Interactive `json:"interactive,omitempty"`
 	Document         *Document    `json:"document,omitempty"`
+	Sticker          *Sticker     `json:"sticker,omitempty"`
 	Status           string       `json:"status,omitempty"`
 	MessageID        string       `json:"message_id,omitempty"`
+}
+
+type Sticker struct {
+	Link string `json:"link"`
 }
 
 type Document struct {
@@ -164,6 +169,18 @@ func NewDocument(to string, opts NewDocumentOpts) Envelope {
 			Link:     opts.Link,
 			Caption:  opts.Caption,
 			Filename: opts.Filename,
+		},
+	}
+}
+
+func NewSticker(to, link string) Envelope {
+	return Envelope{
+		MessagingProduct: "whatsapp",
+		RecipientType:    "individual",
+		To:               to,
+		Type:             "sticker",
+		Sticker: &Sticker{
+			Link: link,
 		},
 	}
 }
