@@ -2,12 +2,14 @@ package message
 
 type Envelope struct {
 	MessagingProduct string       `json:"messaging_product"`
-	RecipientType    string       `json:"recipient_type"`
-	To               string       `json:"to"`
-	Type             string       `json:"type"`
+	RecipientType    string       `json:"recipient_type,omitempty"`
+	To               string       `json:"to,omitempty"`
+	Type             string       `json:"type,omitempty"`
 	Text             *Text        `json:"text,omitempty"`
 	Image            *Image       `json:"image,omitempty"`
 	Interactive      *Interactive `json:"interactive,omitempty"`
+	Status           string       `json:"status,omitempty"`
+	MessageID        string       `json:"message_id,omitempty"`
 }
 
 type Text struct {
@@ -128,5 +130,13 @@ func NewInteractiveFlow(to string, opts NewFlowOpts) Envelope {
 				},
 			},
 		},
+	}
+}
+
+func NewMessageRead(messageId string) Envelope {
+	return Envelope{
+		MessagingProduct: "whatsapp",
+		Status:           "read",
+		MessageID:        messageId,
 	}
 }
