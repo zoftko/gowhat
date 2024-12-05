@@ -8,8 +8,15 @@ type Envelope struct {
 	Text             *Text        `json:"text,omitempty"`
 	Image            *Image       `json:"image,omitempty"`
 	Interactive      *Interactive `json:"interactive,omitempty"`
+	Document         *Document    `json:"document,omitempty"`
 	Status           string       `json:"status,omitempty"`
 	MessageID        string       `json:"message_id,omitempty"`
+}
+
+type Document struct {
+	Link     string `json:"link"`
+	Caption  string `json:"caption,omitempty"`
+	Filename string `json:"filename,omitempty"`
 }
 
 type Text struct {
@@ -57,6 +64,12 @@ type Parameters struct {
 
 type FlowAction struct {
 	Screen string `json:"screen"`
+}
+
+type NewDocumentOpts struct {
+	Link     string
+	Caption  string
+	Filename string
 }
 
 type NewTextOpts struct {
@@ -138,5 +151,19 @@ func NewMessageRead(messageId string) Envelope {
 		MessagingProduct: "whatsapp",
 		Status:           "read",
 		MessageID:        messageId,
+	}
+}
+
+func NewDocument(to string, opts NewDocumentOpts) Envelope {
+	return Envelope{
+		MessagingProduct: "whatsapp",
+		RecipientType:    "individual",
+		To:               to,
+		Type:             "document",
+		Document: &Document{
+			Link:     opts.Link,
+			Caption:  opts.Caption,
+			Filename: opts.Filename,
+		},
 	}
 }
