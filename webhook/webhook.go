@@ -37,13 +37,24 @@ type Profile struct {
 }
 
 type Message struct {
-	From      string `json:"from"`
-	ID        string `json:"id"`
-	Timestamp string `json:"timestamp"`
-	Type      string `json:"type"`
-	Text      Text   `json:"text"`
+	From        string      `json:"from"`
+	ID          string      `json:"id"`
+	Timestamp   string      `json:"timestamp"`
+	Type        string      `json:"type"`
+	Text        Text        `json:"text"`
+	Interactive Interactive `json:"interactive"`
 }
 
 type Text struct {
 	Body string `json:"body"`
+}
+
+type Interactive struct {
+	Type     string   `json:"type"`
+	NfmReply NfmReply `json:"nfm_reply"`
+}
+
+type NfmReply struct {
+	Name         string            `json:"name"`
+	ResponseJson map[string]string `json:"response_json"`
 }
