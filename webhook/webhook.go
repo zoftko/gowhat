@@ -55,6 +55,6 @@ type Interactive struct {
 }
 
 type NfmReply struct {
-	Name         string            `json:"name"`
-	ResponseJson map[string]string `json:"response_json"`
+	Name         string `json:"name"`
+	ResponseJson string `json:"response_json"`
 }
