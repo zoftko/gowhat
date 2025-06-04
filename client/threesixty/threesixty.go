@@ -20,6 +20,14 @@ type Client struct {
 	baseURL string
 }
 
+type MessageEntry struct {
+	ID string `json:"id"`
+}
+
+type Response struct {
+	Messages []MessageEntry `json:"messages"`
+}
+
 func NewClient(token string, baseURL string) (*Client, error) {
 	client := &http.Client{
 		Timeout: 10 * time.Second,
@@ -48,27 +56,32 @@ func (c *Client) Do(req *http.Request) (*http.Response, error) {
 	return c.client.Do(req)
 }
 
-func (c *Client) SendMessage(envelope message.Envelope) error {
+func (c *Client) SendMessage(envelope message.Envelope) (*Response, error) {
 	payload, err := json.Marshal(envelope)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	req, err := http.NewRequest("POST", c.url("messages"), bytes.NewReader(payload))
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	res, err := c.Do(req)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	if res.StatusCode != http.StatusOK {
 		body, _ := io.ReadAll(res.Body)
 
-		return fmt.Errorf("received status code %d, message: %s", res.StatusCode, body)
+		return nil, fmt.Errorf("received status code %d, message: %s", res.StatusCode, body)
 	}
 
-	return nil
+	var data Response
+	if err := json.NewDecoder(res.Body).Decode(&data); err != nil {
+		return nil, fmt.Errorf("failed to parse response body: %w", err)
+	}
+
+	return &data, nil
 }
