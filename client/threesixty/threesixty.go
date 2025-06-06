@@ -20,12 +20,12 @@ type Client struct {
 	baseURL string
 }
 
-type MessageEntry struct {
+type messageEntry struct {
 	ID string `json:"id"`
 }
 
-type Response struct {
-	Messages []MessageEntry `json:"messages"`
+type response struct {
+	Messages []messageEntry `json:"messages"`
 }
 
 func NewClient(token string, baseURL string) (*Client, error) {
@@ -56,32 +56,36 @@ func (c *Client) Do(req *http.Request) (*http.Response, error) {
 	return c.client.Do(req)
 }
 
-func (c *Client) SendMessage(envelope message.Envelope) (*Response, error) {
+func (c *Client) SendMessage(envelope message.Envelope) (string, error) {
 	payload, err := json.Marshal(envelope)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
 	req, err := http.NewRequest("POST", c.url("messages"), bytes.NewReader(payload))
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
 	res, err := c.Do(req)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
 	if res.StatusCode != http.StatusOK {
 		body, _ := io.ReadAll(res.Body)
 
-		return nil, fmt.Errorf("received status code %d, message: %s", res.StatusCode, body)
+		return "", fmt.Errorf("received status code %d, message: %s", res.StatusCode, body)
 	}
 
-	var data Response
+	var data response
 	if err := json.NewDecoder(res.Body).Decode(&data); err != nil {
-		return nil, fmt.Errorf("failed to parse response body: %w", err)
+		return "", fmt.Errorf("failed to parse response body: %w", err)
 	}
 
-	return &data, nil
+	if len(data.Messages) != 1 {
+		return "", fmt.Errorf("found %d messages in response, expected 1", len(data.Messages))
+	}
+
+	return data.Messages[0].ID, nil
 }
