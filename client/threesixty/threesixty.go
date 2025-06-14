@@ -78,6 +78,11 @@ func (c *Client) SendMessage(envelope message.Envelope) (string, error) {
 		return "", fmt.Errorf("received status code %d, message: %s", res.StatusCode, body)
 	}
 
+	// No messageID returned by Meta's API when sending read receipt
+	if envelope.Status != "" {
+		return "", nil
+	}
+
 	var data response
 	if err := json.NewDecoder(res.Body).Decode(&data); err != nil {
 		return "", fmt.Errorf("failed to parse response body: %w", err)
