@@ -53,8 +53,19 @@ type InteractiveHeader struct {
 }
 
 type Action struct {
-	Name       string     `json:"name"`
-	Parameters Parameters `json:"parameters"`
+	Name       *string     `json:"name"`
+	Parameters *Parameters `json:"parameters,omitempty"`
+	Buttons    *[]Button   `json:"buttons,omitempty"`
+}
+
+type Button struct {
+	Type  string `json:"type"`
+	Reply Reply  `json:"reply"`
+}
+
+type Reply struct {
+	ID    string `json:"id"`
+	Title string `json:"title"`
 }
 
 type Parameters struct {
@@ -125,6 +136,7 @@ func NewImageLink(to string, opts NewImageLinkOpts) Envelope {
 }
 
 func NewInteractiveFlow(to string, opts NewFlowOpts) Envelope {
+	flow := "flow"
 	return Envelope{
 		MessagingProduct: "whatsapp",
 		RecipientType:    "individual",
@@ -136,8 +148,8 @@ func NewInteractiveFlow(to string, opts NewFlowOpts) Envelope {
 			Body:   opts.Body,
 			Footer: opts.Footer,
 			Action: Action{
-				Name: "flow",
-				Parameters: Parameters{
+				Name: &flow,
+				Parameters: &Parameters{
 					Mode:               opts.FlowMode,
 					FlowMessageVersion: "3",
 					FlowToken:          opts.FlowToken,
