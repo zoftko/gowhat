@@ -41,6 +41,7 @@ type Message struct {
 	ID          string      `json:"id"`
 	Timestamp   string      `json:"timestamp"`
 	Type        string      `json:"type"`
+	Context     *Context    `json:"context"`
 	Text        Text        `json:"text"`
 	Interactive Interactive `json:"interactive"`
 }
@@ -50,11 +51,22 @@ type Text struct {
 }
 
 type Interactive struct {
-	Type     string   `json:"type"`
-	NfmReply NfmReply `json:"nfm_reply"`
+	Type        string       `json:"type"`
+	NfmReply    *NfmReply    `json:"nfm_reply,omitempty"`
+	ButtonReply *ButtonReply `json:"button_reply,omitempty"`
 }
 
 type NfmReply struct {
 	Name         string `json:"name"`
 	ResponseJson string `json:"response_json"`
+}
+
+type ButtonReply struct {
+	ID    string `json:"id"`
+	Title string `json:"title"`
+}
+
+type Context struct {
+	From string `json:"from"`
+	ID   string `json:"id"`
 }
