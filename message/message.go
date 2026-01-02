@@ -1,17 +1,22 @@
 package message
 
 type Envelope struct {
-	MessagingProduct string       `json:"messaging_product"`
-	RecipientType    string       `json:"recipient_type,omitempty"`
-	To               string       `json:"to,omitempty"`
-	Type             string       `json:"type,omitempty"`
-	Text             *Text        `json:"text,omitempty"`
-	Image            *Image       `json:"image,omitempty"`
-	Interactive      *Interactive `json:"interactive,omitempty"`
-	Document         *Document    `json:"document,omitempty"`
-	Sticker          *Sticker     `json:"sticker,omitempty"`
-	Status           string       `json:"status,omitempty"`
-	MessageID        string       `json:"message_id,omitempty"`
+	MessagingProduct string           `json:"messaging_product"`
+	RecipientType    string           `json:"recipient_type,omitempty"`
+	To               string           `json:"to,omitempty"`
+	Type             string           `json:"type,omitempty"`
+	Text             *Text            `json:"text,omitempty"`
+	Image            *Image           `json:"image,omitempty"`
+	Interactive      *Interactive     `json:"interactive,omitempty"`
+	Document         *Document        `json:"document,omitempty"`
+	Sticker          *Sticker         `json:"sticker,omitempty"`
+	Status           string           `json:"status,omitempty"`
+	TypingIndicator  *TypingIndicator `json:"typing_indicator,omitempty"`
+	MessageID        string           `json:"message_id,omitempty"`
+}
+
+type TypingIndicator struct {
+	Type string `json:"type"`
 }
 
 type Sticker struct {
@@ -163,11 +168,19 @@ func NewInteractiveFlow(to string, opts NewFlowOpts) Envelope {
 	}
 }
 
-func NewMessageRead(messageId string) Envelope {
+func NewMessageRead(messageId string, typingIndicator bool) Envelope {
+	var indicator *TypingIndicator
+	if typingIndicator {
+		indicator = &TypingIndicator{
+			Type: "text",
+		}
+	}
+
 	return Envelope{
 		MessagingProduct: "whatsapp",
 		Status:           "read",
 		MessageID:        messageId,
+		TypingIndicator:  indicator,
 	}
 }
 
