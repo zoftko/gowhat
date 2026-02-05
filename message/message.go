@@ -10,6 +10,7 @@ type Envelope struct {
 	Interactive      *Interactive     `json:"interactive,omitempty"`
 	Document         *Document        `json:"document,omitempty"`
 	Sticker          *Sticker         `json:"sticker,omitempty"`
+	Location         *Location        `json:"location,omitempty"`
 	Status           string           `json:"status,omitempty"`
 	TypingIndicator  *TypingIndicator `json:"typing_indicator,omitempty"`
 	MessageID        string           `json:"message_id,omitempty"`

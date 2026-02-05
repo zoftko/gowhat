@@ -44,6 +44,7 @@ type Message struct {
 	Context     *Context    `json:"context"`
 	Text        Text        `json:"text"`
 	Interactive Interactive `json:"interactive"`
+	Location    Location    `json:"location"`
 }
 
 type Text struct {
@@ -54,6 +55,13 @@ type Interactive struct {
 	Type        string       `json:"type"`
 	NfmReply    *NfmReply    `json:"nfm_reply,omitempty"`
 	ButtonReply *ButtonReply `json:"button_reply,omitempty"`
+}
+
+type Location struct {
+	Address   string `json:"address"`
+	Latitude  string `json:"latitude"`
+	Longitude string `json:"longitude"`
+	Name      string `json:"name"`
 }
 
 type NfmReply struct {
