@@ -15,18 +15,15 @@ func NewInteractiveReplyButtons(to string, opts InteractiveReplyButtonsOpts) Env
 		}
 	}
 
-	return Envelope{
-		MessagingProduct: "whatsapp",
-		RecipientType:    "individual",
-		To:               to,
-		Type:             "interactive",
-		Interactive: &Interactive{
-			Header: opts.Header,
-			Body:   TextObject{Text: opts.Body},
-			Type:   "button",
-			Action: Action{
-				Buttons: &buttons,
-			},
+	e := baseEnvelope(to)
+	e.Type = "interactive"
+	e.Interactive = &Interactive{
+		Header: opts.Header,
+		Body:   TextObject{Text: opts.Body},
+		Type:   "button",
+		Action: Action{
+			Buttons: &buttons,
 		},
 	}
+	return e
 }
