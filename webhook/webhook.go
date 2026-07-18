@@ -28,22 +28,27 @@ type Metadata struct {
 }
 
 type Contact struct {
-	WhatsappID string  `json:"wa_id"`
-	Profile    Profile `json:"profile"`
+	WhatsappID   string  `json:"wa_id"`
+	UserID       string  `json:"user_id"`
+	ParentUserID string  `json:"parent_user_id"`
+	Profile      Profile `json:"profile"`
 }
 
 type Profile struct {
-	Name string `json:"name"`
+	Name     string `json:"name"`
+	Username string `json:"username"`
 }
 
 type Message struct {
-	From        string      `json:"from"`
-	ID          string      `json:"id"`
-	Timestamp   string      `json:"timestamp"`
-	Type        string      `json:"type"`
-	Context     *Context    `json:"context"`
-	Text        Text        `json:"text"`
-	Interactive Interactive `json:"interactive"`
+	From             string      `json:"from"`
+	FromUserID       string      `json:"from_user_id"`
+	FromParentUserID string      `json:"from_parent_user_id"`
+	ID               string      `json:"id"`
+	Timestamp        string      `json:"timestamp"`
+	Type             string      `json:"type"`
+	Context          *Context    `json:"context"`
+	Text             Text        `json:"text"`
+	Interactive      Interactive `json:"interactive"`
 }
 
 type Text struct {

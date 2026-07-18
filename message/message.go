@@ -1,9 +1,34 @@
 package message
 
+import "regexp"
+
+// bsuidPattern matches regular BSUIDs (e.g. US.13491208655302741918) and
+// parent BSUIDs (e.g. US.ENT.11815799212886844830):
+// 2-letter ISO country code + "." + optional "ENT." + 1–128 alphanumeric chars.
+var bsuidPattern = regexp.MustCompile(`^[A-Za-z]{2}\.(ENT\.)?[A-Za-z0-9]{1,128}$`)
+
+func isBSUID(s string) bool {
+	return bsuidPattern.MatchString(s)
+}
+
+func baseEnvelope(to string) Envelope {
+	e := Envelope{
+		MessagingProduct: "whatsapp",
+		RecipientType:    "individual",
+	}
+	if isBSUID(to) {
+		e.Recipient = to
+	} else {
+		e.To = to
+	}
+	return e
+}
+
 type Envelope struct {
 	MessagingProduct string           `json:"messaging_product"`
 	RecipientType    string           `json:"recipient_type,omitempty"`
 	To               string           `json:"to,omitempty"`
+	Recipient        string           `json:"recipient,omitempty"`
 	Type             string           `json:"type,omitempty"`
 	Text             *Text            `json:"text,omitempty"`
 	Image            *Image           `json:"image,omitempty"`
@@ -115,57 +140,48 @@ type NewFlowOpts struct {
 }
 
 func NewText(to string, opts NewTextOpts) Envelope {
-	return Envelope{
-		MessagingProduct: "whatsapp",
-		RecipientType:    "individual",
-		To:               to,
-		Type:             "text",
-		Text: &Text{
-			Body:       opts.Text,
-			PreviewURL: opts.PreviewURL,
-		},
+	e := baseEnvelope(to)
+	e.Type = "text"
+	e.Text = &Text{
+		Body:       opts.Text,
+		PreviewURL: opts.PreviewURL,
 	}
+	return e
 }
 
 func NewImageLink(to string, opts NewImageLinkOpts) Envelope {
-	return Envelope{
-		MessagingProduct: "whatsapp",
-		RecipientType:    "individual",
-		To:               to,
-		Type:             "image",
-		Image: &Image{
-			Link:    opts.Link,
-			Caption: opts.Caption,
-		},
+	e := baseEnvelope(to)
+	e.Type = "image"
+	e.Image = &Image{
+		Link:    opts.Link,
+		Caption: opts.Caption,
 	}
+	return e
 }
 
 func NewInteractiveFlow(to string, opts NewFlowOpts) Envelope {
 	flow := "flow"
-	return Envelope{
-		MessagingProduct: "whatsapp",
-		RecipientType:    "individual",
-		To:               to,
-		Type:             "interactive",
-		Interactive: &Interactive{
-			Type:   "flow",
-			Header: opts.Header,
-			Body:   opts.Body,
-			Footer: opts.Footer,
-			Action: Action{
-				Name: &flow,
-				Parameters: &Parameters{
-					Mode:               opts.FlowMode,
-					FlowMessageVersion: "3",
-					FlowToken:          opts.FlowToken,
-					FlowID:             opts.FlowId,
-					FlowCTA:            opts.FlowCTA,
-					FlowAction:         "navigate",
-					FlowActionPayload:  FlowAction{Screen: opts.FirstScreen},
-				},
+	e := baseEnvelope(to)
+	e.Type = "interactive"
+	e.Interactive = &Interactive{
+		Type:   "flow",
+		Header: opts.Header,
+		Body:   opts.Body,
+		Footer: opts.Footer,
+		Action: Action{
+			Name: &flow,
+			Parameters: &Parameters{
+				Mode:               opts.FlowMode,
+				FlowMessageVersion: "3",
+				FlowToken:          opts.FlowToken,
+				FlowID:             opts.FlowId,
+				FlowCTA:            opts.FlowCTA,
+				FlowAction:         "navigate",
+				FlowActionPayload:  FlowAction{Screen: opts.FirstScreen},
 			},
 		},
 	}
+	return e
 }
 
 func NewMessageRead(messageId string, typingIndicator bool) Envelope {
@@ -185,27 +201,19 @@ func NewMessageRead(messageId string, typingIndicator bool) Envelope {
 }
 
 func NewDocument(to string, opts NewDocumentOpts) Envelope {
-	return Envelope{
-		MessagingProduct: "whatsapp",
-		RecipientType:    "individual",
-		To:               to,
-		Type:             "document",
-		Document: &Document{
-			Link:     opts.Link,
-			Caption:  opts.Caption,
-			Filename: opts.Filename,
-		},
+	e := baseEnvelope(to)
+	e.Type = "document"
+	e.Document = &Document{
+		Link:     opts.Link,
+		Caption:  opts.Caption,
+		Filename: opts.Filename,
 	}
+	return e
 }
 
 func NewSticker(to, link string) Envelope {
-	return Envelope{
-		MessagingProduct: "whatsapp",
-		RecipientType:    "individual",
-		To:               to,
-		Type:             "sticker",
-		Sticker: &Sticker{
-			Link: link,
-		},
-	}
+	e := baseEnvelope(to)
+	e.Type = "sticker"
+	e.Sticker = &Sticker{Link: link}
+	return e
 }
